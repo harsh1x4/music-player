@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" />
+    <link rel="shortcut icon" href="images/cover.jpg" type="image/x-icon">
+</head>
+
+<body>
+    <div class="main-div bgplay" >
+        <div class="music_container">
+            <h2 id="title">Jatt Da Muqabla</h2>
+            <h3 id="artist">Sidhu Moosewala</h3>
+            <div class="img_container">
+                <img src="images/xy-1.jpg" alt="Cover Image">
+            </div>
+            <audio src="music/xy-1.mp3"></audio>
+
+            <div class="progressbar_container" id="progressbar_container">
+                <div class="progress_duration_meter">
+                    <div id="current_time">0:00</div>
+                    <div id="duration">3:22</div>
+                </div>
+                <div class="progress_div" id="progress_div">
+                    <div class="progress" id="progress"></div>
+                </div>
+            </div>
+
+            <div class="music_controls">
+                <i class="fas fa-backward" id="prev" title="Previous"></i>
+                <i class="fas fa-play main_button" id="play" title="Play"></i>
+                <i class="fas fa-forward" id="next" title="next"></i>
+            </div>
+        </div>
+
+        <footer>
+            <p>The music/audio used in this webpage is not a property of Developer. All credit
+                goes to owners of respective music/audio.</p>
+        </footer>
+    </div>
+
+    <script>
+        const music = document.querySelector("audio");
+        const img = document.querySelector("img");
+        const play = document.getElementById('play');
+        const artist = document.getElementById('artist');
+        const title = document.getElementById('title');
+        const previous = document.getElementById('previous');
+        const next = document.getElementById('next');
+        const bg = document.getElementById('main-div');
+
+        let progress = document.getElementById("progress");
+        let total_duration = document.getElementById("duration");
+        const current_time = document.getElementById("current_time");
+        const progress_div = document.getElementById("progress_div");
+
+
+        const songs = [{
+            name: "xy-1",
+            title: "Jatt Da Muqabla",
+            artist: "Sidhu Moosewala"
+        },
+        {
+            name: "xy-2",
+            title: "295",
+            artist: "Sidhu Moosewala"
+        },
+        {
+            name: "xy-3",
+            title: "No Love",
+            artist: "Shubh"
+        },
+        {
+            name: "xy-4",
+            title: "Same Beef",
+            artist: "Sidhu Moosewala"
+        },
+        {
+            name: "xy-5",
+            title: "So High",
+            artist: "Sidhu Moosewala"
+        },
+        {
+            name: "xy-6",
+            title: "These Days",
+            artist: "Sidhu Moosewala"
+        },
+        {
+            name: "xy-7",
+            title: "We Rollin",
+            artist: "Shubh"
+        },
+        {
+            name: "xy-8",
+            title: "Elevated",
+            artist: "Shubh"
+        },
+        {
+            name: "xy-9",
+            title: "Levels",
+            artist: "Sidhu Moosewala"
+        }
+
+        ];
+
+        isPlaying = false;
+        const playMusic = () => {
+            isPlaying = true;
+            music.play();
+            play.classList.replace("fa-play", "fa-pause");
+            img.classList.add("animate");
+        };
+        const pauseMusic = () => {
+            isPlaying = false;
+            music.pause();
+            play.classList.replace("fa-pause", "fa-play");
+            img.classList.remove("animate");
+        };
+
+        play.addEventListener('click', () => {
+            isPlaying ? pauseMusic() : playMusic();
+        });
+
+        const loadSong = (songs) => {
+            title.textContent = songs.title;
+            artist.textContent = songs.artist;
+            music.src = "music/" + songs.name + ".mp3";
+            img.src = "images/" + songs.name + ".jpg";
+        };
+
+
+        songIndex = 0;
+
+        const nextSong = () => {
+            songIndex = (songIndex + 1) % songs.length;
+            loadSong(songs[songIndex]);
+            playMusic();
+        };
+
+        const prevSong = () => {
+            songIndex = (songIndex - 1 + songs.length) % songs.length;
+            loadSong(songs[songIndex]);
+            playMusic();
+        };
+
+        // Progress Bar JS
+
+        music.addEventListener('timeupdate', (event) => {
+            const { currentTime, duration } = event.srcElement;
+            let progress_time = (currentTime / duration) * 100;
+            progress.style.width = `${progress_time}%`;
+
+            // Music Duration Update
+
+            let min_duration = Math.floor(duration / 60);
+            let sec_duration = Math.floor(duration % 60);
+            let tot_duration = `${min_duration}:${sec_duration}`;
+            if (duration) {
+                total_duration.textContent = `${tot_duration}`;
+            }
+
+            // Current Duration Update
+
+            let min_currentTime = Math.floor(currentTime / 60);
+            let sec_currentTime = Math.floor(currentTime % 60);
+
+            if (sec_currentTime < 10) {
+                sec_currentTime = `0${sec_currentTime}`
+            }
+            let tot_currentTime = `${min_currentTime}:${sec_currentTime}`;
+            current_time.textContent = `${tot_currentTime}`;
+
+        });
+
+        // Progress onclick functionality
+
+        progress_div.addEventListener('click', (event) => {
+            // const { currentTime, duration } = music;
+            // const duration = music.duration;
+            const { duration } = music;
+            let move_progress = (event.offsetX / event.srcElement.clientWidth) * duration;
+            // console.log(duration);
+            // console.log(move_progress);
+            music.currentTime = move_progress;
+        });
+
+
+
+        // If Music end call next song functionality
+
+        music.addEventListener('ended', nextSong);
+        next.addEventListener('click', nextSong);
+        prev.addEventListener('click', prevSong);
+
+
+    </script>
+    <script src="script.js"></script>
+
+</body>
+
+</html>
